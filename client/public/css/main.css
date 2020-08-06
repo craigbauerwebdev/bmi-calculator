@@ -1,0 +1,12 @@
+body {
+  background: red;
+  padding: 0; }
+
+.form-wrap {
+  text-align: center;
+  max-width: 500px;
+  padding: 10px;
+  width: calc(100% - 20px);
+  margin: 0 auto; }
+  .form-wrap input {
+    margin: 15px 0; }

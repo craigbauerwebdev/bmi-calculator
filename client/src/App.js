@@ -1,11 +1,10 @@
 import React, { Component, Fragment } from 'react';
 
-
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      bmi: 0,
+      bmi: null,
       comment: null
     }
     this.updateHeight = this.updateHeight.bind(this);
@@ -31,9 +30,11 @@ class App extends Component {
     let 
       bmi = weight / (height ** 2);
     console.log(bmi);
-    this.setState({
-      bmi
-    })
+    if(this.state.bmi !== NaN) {
+      this.setState({
+        bmi
+      });
+    }
 
     if (bmi < 18.5) {
       this.setState({
@@ -58,14 +59,18 @@ class App extends Component {
     return (
       <Fragment>
         <div className="app">
-          <p>Enter your info to calculate your BMI</p>
-          <input className="form-control" placeholder="Inches" onChange={this.updateHeight} />
-          <input className="form-control" placeholder="Pounds" onChange={this.updateWeight} />
-          <button className="btn btn-primary" onClick={this.calculateBMI}>Calculate</button>
-          <h1>{Math.round(this.state.bmi * 10) / 10}</h1>
-          {this.state.comment &&
-            <h2>You are {this.state.comment}</h2>
-          }
+          <div className="form-wrap">
+            <p>Enter your info to calculate your BMI</p>
+            <input className="form-control" placeholder="Inches" onChange={this.updateHeight} />
+            <input className="form-control" placeholder="Pounds" onChange={this.updateWeight} />
+            <button className="btn btn-primary" onClick={this.calculateBMI}>Calculate</button>
+            {this.state.bmi &&
+              <h1>{Math.round(this.state.bmi * 10) / 10}</h1>
+            }
+            {this.state.comment &&
+              <h2>You are {this.state.comment}</h2>
+            }
+          </div>
         </div>
       </Fragment>
     );
