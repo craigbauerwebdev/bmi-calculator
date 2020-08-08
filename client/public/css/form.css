@@ -6,3 +6,5 @@
   margin: 0 auto; }
   .form-wrap input {
     margin: 15px 0; }
+  .form-wrap .row select {
+    margin-bottom: 15px; }
