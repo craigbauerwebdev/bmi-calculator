@@ -17,7 +17,12 @@ class App extends Component {
       //kg: null,
       //lbs: null,
       //height: null,
-      //weight: null
+      //weight: null,
+      feetClass: null,
+      inchesClass: null,
+      metersClass: null,
+      lbsClass: null,
+      kgClass: null
     }
     this.updateSystem = this.updateSystem.bind(this);
     this.updateHeight = this.updateHeight.bind(this);
@@ -36,7 +41,13 @@ class App extends Component {
       kg: null,
       lbs: null,
       height: null,
-      weight: null
+      weight: null,
+      error: null,
+      feetClass: null, // reste classes when system updates
+      inchesClass: null,
+      metersClass: null,
+      lbsClass: null,
+      kgClass: null
     });
   }
 
@@ -80,7 +91,7 @@ class App extends Component {
     if(system === "imperial") {
       //if(feet && inches) {
         const 
-          totalHeight = (feet * 12) + eval(inches);
+          totalHeight = (feet * 12) + parseFloat(inches);
         console.log(totalHeight, feet, inches, "inches");
         height = (totalHeight * 2.54) / 100; // converted to meters from inches
         console.log(height, "meters");
@@ -117,32 +128,53 @@ class App extends Component {
   calculateBMI() {
     console.log("calcing bmi");
     const { weight, height } = this.state;
-    let 
-      bmi = weight / (height ** 2);
-    console.log(bmi);
-    this.setState({
-      bmi
-    }, () => {
-      if(!isNaN(this.state.bmi)) {
-        if (bmi < 18.5) {
-          this.setState({
-            comment: 'Underweight'
-          });
-        } else if (bmi < 25) {
-          this.setState({
-            comment: 'Normal'
-          });
-        } else if (bmi < 30) {
-          this.setState({
-            comment: 'Overweight'
-          });
-        } else {
-          this.setState({
-            comment: 'Obese'
-          });
+    if (weight &&
+      !isNaN(weight) &&
+      weight !== "" &&
+      weight !== "0" &&
+      !isNaN(height) &&
+      height &&
+      height !== "" &&
+      height !== "0") {
+      this.setState({
+        error: null
+      });
+      let 
+        bmi = weight / (height ** 2);
+      console.log(bmi);
+      this.setState({
+        bmi
+      }, () => {
+        if(!isNaN(this.state.bmi)) {
+          if (bmi < 18.5) {
+            this.setState({
+              comment: 'You are Underweight'
+            });
+          } else if (bmi < 25) {
+            this.setState({
+              comment: 'You are Normal'
+            });
+          } else if (bmi < 30) {
+            this.setState({
+              comment: 'You are Overweight'
+            });
+          } else {
+            this.setState({
+              comment: 'You are Obese'
+            });
+          }
         }
-      }
-    });
+        
+      });
+    } else { 
+      return (
+        this.setState({
+          error: "Please check the form for errors and try again :(",
+          bmi: null,
+          comment: null
+        })
+      );
+    }
   }
 
   render() {
@@ -191,11 +223,14 @@ class App extends Component {
                 </Fragment>
               } 
               <button className="btn btn-primary" onClick={this.calculateBMI}>Calculate</button>
-              {this.state.bmi &&
+              {(this.state.bmi && this.state.bmi !== NaN) &&
                 <h1>{Math.round(this.state.bmi * 10) / 10}</h1>
               }
             {this.state.comment &&
-              <h2>You are {this.state.comment}</h2>
+              <h2>{this.state.comment}</h2>
+            }
+            {this.state.error &&
+              <p style={{color: "red"}}>{this.state.error}</p>
             }
           </div>
         </div>
