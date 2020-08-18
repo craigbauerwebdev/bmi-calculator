@@ -6,7 +6,7 @@ import App from './App';
 "postbuild": "mv build ../../../wp-sites/gfd/wp-content/themes/gfd_theme/build/",
 "postbuild": "rm -rf ../build && mv build ../",
 // production
-"postbuild": "rm -rf ../../../wp-sites/gfd/wp-content/themes/gfd_theme/build && mv ../../../wp-sites/gfd/wp-content/themes/gfd_theme/"
+"postbuild": "rm -rf ../../../wp-sites/gfd/wp-content/themes/gfd_theme/build && mv build ../../../wp-sites/gfd/wp-content/themes/gfd_theme/"
 */
 
 ReactDOM.render(
