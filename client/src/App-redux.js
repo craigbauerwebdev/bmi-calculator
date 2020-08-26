@@ -1,0 +1,259 @@
+import React, { Component, Fragment } from 'react';
+import { connect } from 'react-redux';
+import { updateLbs } from './redux/actions';
+
+//for testing metric
+//height: 183cm  oe 1.8288 meters
+//weight: 100kg
+
+class AppRedux extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      //bmi: null,
+      //comment: null,
+      system: "imperial",
+      //feet: null,
+      //inches: null,
+      //cm: null,
+      //kg: null,
+      //lbs: null,
+      //height: null,
+      //weight: null,
+      feetClass: null,
+      inchesClass: null,
+      metersClass: null,
+      lbsClass: null,
+      kgClass: null
+    }
+    this.updateSystem = this.updateSystem.bind(this);
+    this.updateHeight = this.updateHeight.bind(this);
+    this.updateWeight = this.updateWeight.bind(this);
+    this.calculateBMI = this.calculateBMI.bind(this);
+  }
+
+  componentDidMount () {
+      this.props.updateLbs(100);
+  }
+
+  updateSystem(e) {
+    this.setState({
+      system: e.target.value,
+      comment: null,
+      bmi: null,
+      feet: null,
+      inches: null,
+      cm: null,
+      kg: null,
+      lbs: null,
+      height: null,
+      weight: null,
+      error: null,
+      feetClass: null, // reste classes when system updates
+      inchesClass: null,
+      metersClass: null,
+      lbsClass: null,
+      kgClass: null
+    });
+  }
+
+
+  updateFeet = (e) => {
+    this.setState({
+      feet: e.target.value
+    }, this.updateHeight);
+  }
+
+  updateInches = (e) => {
+    this.setState({
+      inches: e.target.value
+    }, this.updateHeight);
+  }
+
+  updateCM = (e) => {
+    this.setState({
+      cm: e.target.value
+    }, this.updateHeight);
+  }
+
+  updateLbs = (e) => {
+    console.log("update lbs");
+    this.setState({
+      lbs: e.target.value
+    }, this.updateWeight);
+  }
+
+  updateKG = (e) => {
+    this.setState({
+      kg: e.target.value
+    }, this.updateWeight);
+  }
+
+  updateHeight() {
+    const
+      {system, feet, inches} = this.state;
+    let
+      height;
+    console.log("updating height", feet, inches);
+    if(system === "imperial") {
+      //if(feet && inches) {
+        const 
+          totalHeight = (feet * 12) + parseFloat(inches);
+        console.log(totalHeight, feet, inches, "inches");
+        height = (totalHeight * 2.54) / 100; // converted to meters from inches
+        console.log(height, "meters");
+        // use this.state.system to decide what to convert to
+      //}
+    }
+    if(system === "metric") {
+      height = this.state.cm / 100;
+      console.log(height, "meters");
+    }
+    this.setState({
+      height: height
+    })
+  }
+  updateWeight(e) {
+    console.log("updating weight");
+    const 
+      {system, kg, lbs} = this.state;
+    let
+      weight;
+    if(system === "imperial") { 
+        weight = lbs / 2.2046226218; // converted to kg from lbs
+        console.log(weight, "weight-imp");
+        this.props.updateLbs(weight);
+    }
+    if(system === "metric") {
+      weight = kg;
+      console.log(weight, "weight");
+    }
+    this.setState({
+      weight
+    })
+  }
+
+  calculateBMI() {
+    console.log("calcing bmi");
+    const { weight, height } = this.state;
+    if (weight &&
+      !isNaN(weight) &&
+      weight !== "" &&
+      weight !== "0" &&
+      !isNaN(height) &&
+      height &&
+      height !== "" &&
+      height !== "0") {
+      this.setState({
+        error: null
+      });
+      let 
+        bmi = weight / (height ** 2);
+      console.log(bmi);
+      this.setState({
+        bmi
+      }, () => {
+        if(!isNaN(this.state.bmi)) {
+          if (bmi < 18.5) {
+            this.setState({
+              comment: 'You are Underweight'
+            });
+          } else if (bmi < 25) {
+            this.setState({
+              comment: 'You are Normal'
+            });
+          } else if (bmi < 30) {
+            this.setState({
+              comment: 'You are Overweight'
+            });
+          } else {
+            this.setState({
+              comment: 'You are Obese'
+            });
+          }
+        }
+        
+      });
+    } else { 
+      return (
+        this.setState({
+          error: "Please check the form for errors and try again :(",
+          bmi: null,
+          comment: null
+        })
+      );
+    }
+  }
+
+  render() {
+    return (
+      <Fragment>
+        <div className="app"> 
+          <div className="form-wrap">
+              <div className="row">
+                <div className="col">
+                  <p>Enter your info to calculate your BMI</p>
+                  <select onChange={this.updateSystem} className="form-control">
+                    <option value="imperial">Imperial</option>
+                    <option value="metric">Metric</option>
+                  </select>
+                </div>
+              </div> 
+              {this.state.system === "imperial" &&
+                <Fragment>
+                  <div className="row">
+                    <div className="col">
+                      <input className="form-control" placeholder="Feet" onChange={this.updateFeet} />
+                    </div>
+                    <div className="col">
+                      <input className="form-control" placeholder="Inches" onChange={this.updateInches} />
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col">
+                      <input className="form-control" placeholder="Pounds" onChange={this.updateLbs} />
+                    </div>
+                  </div>
+                </Fragment>
+              }
+              {this.state.system === "metric" &&
+                <Fragment>
+                  <div className="row">
+                    <div className="col">
+                      <input className="form-control" placeholder="Centimeters" onChange={this.updateCM} />
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col">
+                      <input className="form-control" placeholder="Kilograms" onChange={this.updateKG} />
+                    </div>
+                  </div>
+                </Fragment>
+              } 
+              <button className="btn btn-primary" onClick={this.calculateBMI}>Calculate</button>
+              {(this.state.bmi && this.state.bmi !== NaN) &&
+                <h1>{Math.round(this.state.bmi * 10) / 10}</h1>
+              }
+            {this.state.comment &&
+              <h2>{this.state.comment}</h2>
+            }
+            {this.state.error &&
+              <p style={{color: "red"}}>{this.state.error}</p>
+            }
+          </div>
+        </div>
+      </Fragment>
+    );
+  }
+}
+const mapStateToProps = (state) => {
+    console.log(state);
+    return {
+        lbs: state.lbs
+    }
+}
+export default connect(
+    mapStateToProps,
+    { updateLbs } //calls dispatch function and adds action creators that have been imported as named functions
+)(AppRedux);
+//export default AppRedux;
