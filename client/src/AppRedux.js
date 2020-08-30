@@ -1,6 +1,15 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
-import { updateLbs } from './redux/actions';
+import { // action creators
+  updateLbs, 
+  updateSystem, 
+  updateFeet, 
+  updateInches, 
+  updateCentimeters,
+  updateKilograms,
+  updateHeight,
+  updateWeight
+} from './redux/actions';
 
 //for testing metric
 //height: 183cm  oe 1.8288 meters
@@ -10,132 +19,119 @@ class AppRedux extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      //bmi: null,
-      //comment: null,
+      bmi: null,
+      comment: null,
       system: "imperial",
-      //feet: null,
-      //inches: null,
-      //cm: null,
-      //kg: null,
-      //lbs: null,
-      //height: null,
-      //weight: null,
-      feetClass: null,
-      inchesClass: null,
-      metersClass: null,
-      lbsClass: null,
-      kgClass: null
+      //feetClass: null,
+      //inchesClass: null,
+      //metersClass: null,
+      //lbsClass: null,
+      //kgClass: null
     }
     this.updateSystem = this.updateSystem.bind(this);
-    this.updateHeight = this.updateHeight.bind(this);
-    this.updateWeight = this.updateWeight.bind(this);
-    this.calculateBMI = this.calculateBMI.bind(this);
+    /* this.updateHeight = this.updateHeight.bind(this);
+    this.updateWeight = this.updateWeight.bind(this);*/
+    this.calculateBMI = this.calculateBMI.bind(this); 
   }
 
-  componentDidMount () {
-      this.props.updateLbs(100);
+  componentDidUpdate = (nextProps) => { 
+    this.updateWeight();
+    this.updateHeight();
+    //rce condition with redux where nextProps is not updated when this function runs - try thunk
+    /* if (nextProps.feet && nextProps.inches || nextProps.cm) {
+      console.log("component did update && passed");
+      this.updateHeight(); 
+    }
+    if (nextProps.lbs || nextProps.kg) {
+      console.log("component did update && passed");
+      this.updateWeight();
+    } */
   }
 
   updateSystem(e) {
+    this.props.updateSystem(e.target.value);
+    this.props.updateFeet(null); //reset lbs on system change
+    this.props.updateInches(null);
+    this.props.updateLbs(null);
+    this.props.updateKilograms(null);
+    this.props.updateCentimeters(null);
+
     this.setState({
-      system: e.target.value,
       comment: null,
       bmi: null,
-      feet: null,
+      error: null
+      /* feet: null,
       inches: null,
       cm: null,
       kg: null,
       lbs: null,
       height: null,
-      weight: null,
-      error: null,
-      feetClass: null, // reste classes when system updates
-      inchesClass: null,
-      metersClass: null,
-      lbsClass: null,
-      kgClass: null
+      weight: null, */
+      //feetClass: null, // reste classes when system updates
+      //inchesClass: null,
+      //metersClass: null,
+      //lbsClass: null,
+      //kgClass: null
     });
   }
 
 
   updateFeet = (e) => {
-    this.setState({
-      feet: e.target.value
-    }, this.updateHeight);
+    this.props.updateFeet(e.target.value);
   }
 
   updateInches = (e) => {
-    this.setState({
-      inches: e.target.value
-    }, this.updateHeight);
+    this.props.updateInches(e.target.value);
   }
 
   updateCM = (e) => {
-    this.setState({
-      cm: e.target.value
-    }, this.updateHeight);
+    this.props.updateCentimeters(e.target.value);
   }
 
   updateLbs = (e) => {
-    console.log("update lbs");
-    this.setState({
-      lbs: e.target.value
-    }, this.updateWeight);
+    this.props.updateLbs(e.target.value);
   }
 
   updateKG = (e) => {
-    this.setState({
-      kg: e.target.value
-    }, this.updateWeight);
+    this.props.updateKilograms(e.target.value);
   }
 
   updateHeight() {
-    const
-      {system, feet, inches} = this.state;
-    let
-      height;
-    console.log("updating height", feet, inches);
-    if(system === "imperial") {
-      //if(feet && inches) {
-        const 
-          totalHeight = (feet * 12) + parseFloat(inches);
-        console.log(totalHeight, feet, inches, "inches");
-        height = (totalHeight * 2.54) / 100; // converted to meters from inches
-        console.log(height, "meters");
-        // use this.state.system to decide what to convert to
-      //}
-    }
-    if(system === "metric") {
-      height = this.state.cm / 100;
-      console.log(height, "meters");
-    }
-    this.setState({
-      height: height
-    })
+    setTimeout(() => {
+      const 
+        {system, feet, inches, cm} = this.props;
+      let
+        height;
+      if(system === "imperial") {
+          const 
+            totalHeight = (feet * 12) + parseFloat(inches);
+          height = (totalHeight * 2.54) / 100; // converted to meters from inches
+      }
+      if(system === "metric") {
+        height = cm / 100;
+      }
+      this.props.updateHeight(height);
+    }, 500);
   }
   updateWeight(e) {
-    console.log("updating weight");
-    const 
-      {system, kg, lbs} = this.state;
-    let
-      weight;
-    if(system === "imperial") { 
-        weight = lbs / 2.2046226218; // converted to kg from lbs
-        console.log(weight, "weight-imp");
-        this.props.updateLbs(weight);
-    }
-    if(system === "metric") {
-      weight = kg;
-      console.log(weight, "weight");
-    }
-    this.setState({
-      weight
-    })
+    setTimeout(() => {
+      const 
+        {system, kg, lbs} = this.props;
+      let
+        weight;
+      if(system === "imperial") { 
+          weight = lbs / 2.2046226218;
+          this.props.updateWeight(weight);
+      }
+      if(system === "metric") {
+        weight = kg;
+        this.props.updateWeight(weight);
+      }
+    }, 500);
   }
 
   calculateBMI() {
-    console.log("calcing bmi");
-    const { weight, height } = this.state;
+    const { weight, height } = this.props;
     if (weight &&
       !isNaN(weight) &&
       weight !== "" &&
@@ -149,7 +145,6 @@ class AppRedux extends Component {
       });
       let 
         bmi = weight / (height ** 2);
-      console.log(bmi);
       this.setState({
         bmi
       }, () => {
@@ -171,8 +166,7 @@ class AppRedux extends Component {
               comment: 'You are Obese'
             });
           }
-        }
-        
+        }    
       });
     } else { 
       return (
@@ -199,7 +193,7 @@ class AppRedux extends Component {
                   </select>
                 </div>
               </div> 
-              {this.state.system === "imperial" &&
+              {this.props.system === "imperial" &&
                 <Fragment>
                   <div className="row">
                     <div className="col">
@@ -216,7 +210,7 @@ class AppRedux extends Component {
                   </div>
                 </Fragment>
               }
-              {this.state.system === "metric" &&
+              {this.props.system === "metric" &&
                 <Fragment>
                   <div className="row">
                     <div className="col">
@@ -235,7 +229,7 @@ class AppRedux extends Component {
                 <h1>{Math.round(this.state.bmi * 10) / 10}</h1>
               }
             {this.state.comment &&
-              <h2>{this.state.comment}</h2>
+              <h2 className="comment">{this.state.comment}</h2>
             }
             {this.state.error &&
               <p style={{color: "red"}}>{this.state.error}</p>
@@ -249,11 +243,24 @@ class AppRedux extends Component {
 const mapStateToProps = (state) => {
     console.log(state);
     return {
-        lbs: state.lbs
+        system: state.system,
+        lbs: state.lbs,
+        feet: state.feet,
+        inches: state.inches,
+        cm: state.cm,
+        kg: state.kg,
+        weight: state.weight,
+        height: state.height
     }
 }
 export default connect(
-    mapStateToProps,
-    { updateLbs } //calls dispatch function and adds action creators that have been imported as named functions
+  mapStateToProps,
+  { updateLbs, 
+    updateSystem, 
+    updateFeet, 
+    updateInches, 
+    updateCentimeters, 
+    updateKilograms, 
+    updateWeight, 
+    updateHeight }
 )(AppRedux);
-//export default AppRedux;
