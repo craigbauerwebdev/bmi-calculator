@@ -10,6 +10,7 @@ import { // action creators
   updateHeight,
   updateWeight
 } from './redux/actions';
+import Result from "./Result"
 
 //for testing metric
 //height: 183cm  oe 1.8288 meters
@@ -28,16 +29,13 @@ class AppRedux extends Component {
       //lbsClass: null,
       //kgClass: null
     }
-    this.updateSystem = this.updateSystem.bind(this);
-    /* this.updateHeight = this.updateHeight.bind(this);
-    this.updateWeight = this.updateWeight.bind(this);*/
-    this.calculateBMI = this.calculateBMI.bind(this); 
+    this.updateSystem = this.updateSystem.bind(this);     
   }
 
   componentDidUpdate = (nextProps) => { 
     this.updateWeight();
     this.updateHeight();
-    //rce condition with redux where nextProps is not updated when this function runs - try thunk
+    //race condition with redux where nextProps is not updated when this function runs - try thunk
     /* if (nextProps.feet && nextProps.inches || nextProps.cm) {
       console.log("component did update && passed");
       this.updateHeight(); 
@@ -50,29 +48,11 @@ class AppRedux extends Component {
 
   updateSystem(e) {
     this.props.updateSystem(e.target.value);
-    this.props.updateFeet(null); //reset lbs on system change
+    this.props.updateFeet(null);
     this.props.updateInches(null);
     this.props.updateLbs(null);
     this.props.updateKilograms(null);
     this.props.updateCentimeters(null);
-
-    this.setState({
-      comment: null,
-      bmi: null,
-      error: null
-      /* feet: null,
-      inches: null,
-      cm: null,
-      kg: null,
-      lbs: null,
-      height: null,
-      weight: null, */
-      //feetClass: null, // reste classes when system updates
-      //inchesClass: null,
-      //metersClass: null,
-      //lbsClass: null,
-      //kgClass: null
-    });
   }
 
 
@@ -113,6 +93,7 @@ class AppRedux extends Component {
       this.props.updateHeight(height);
     }, 500);
   }
+
   updateWeight(e) {
     setTimeout(() => {
       const 
@@ -130,56 +111,8 @@ class AppRedux extends Component {
     }, 500);
   }
 
-  calculateBMI() {
-    const { weight, height } = this.props;
-    if (weight &&
-      !isNaN(weight) &&
-      weight !== "" &&
-      weight !== "0" &&
-      !isNaN(height) &&
-      height &&
-      height !== "" &&
-      height !== "0") {
-      this.setState({
-        error: null
-      });
-      let 
-        bmi = weight / (height ** 2);
-      this.setState({
-        bmi
-      }, () => {
-        if(!isNaN(this.state.bmi)) {
-          if (bmi < 18.5) {
-            this.setState({
-              comment: 'You are Underweight'
-            });
-          } else if (bmi < 25) {
-            this.setState({
-              comment: 'You are Normal'
-            });
-          } else if (bmi < 30) {
-            this.setState({
-              comment: 'You are Overweight'
-            });
-          } else {
-            this.setState({
-              comment: 'You are Obese'
-            });
-          }
-        }    
-      });
-    } else { 
-      return (
-        this.setState({
-          error: "Please check the form for errors and try again :(",
-          bmi: null,
-          comment: null
-        })
-      );
-    }
-  }
-
   render() {
+    const {height, weight} = this.props;
     return (
       <Fragment>
         <div className="app"> 
@@ -223,17 +156,8 @@ class AppRedux extends Component {
                     </div>
                   </div>
                 </Fragment>
-              } 
-              <button className="btn btn-primary" onClick={this.calculateBMI}>Calculate</button>
-              {(this.state.bmi && this.state.bmi !== NaN) &&
-                <h1>{Math.round(this.state.bmi * 10) / 10}</h1>
               }
-            {this.state.comment &&
-              <h2 className="comment">{this.state.comment}</h2>
-            }
-            {this.state.error &&
-              <p style={{color: "red"}}>{this.state.error}</p>
-            }
+              <Result height={height} weight={weight} />
           </div>
         </div>
       </Fragment>
