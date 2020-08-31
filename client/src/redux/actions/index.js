@@ -14,7 +14,6 @@ export const updateLbs = (lbs) => {
 }
 
 export const updateFeet = (feet) => {
-    //console.log("update Feet");
     return {
         type: "UPDATE_FEET",
         payload: feet
@@ -22,7 +21,6 @@ export const updateFeet = (feet) => {
 }
 
 export const updateInches = (inches) => {
-    //console.log("update Inches AC");
     return {
         type: "UPDATE_INCHES",
         payload: inches
@@ -44,7 +42,6 @@ export const updateKilograms = (kg) => {
 }
 
 export const updateHeight = (height) => {
-    //console.log("updateHeight ACTION Fired!");
     return {
         type: "UPDATE_HEIGHT",
         payload: height

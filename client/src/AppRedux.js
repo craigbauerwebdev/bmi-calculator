@@ -32,29 +32,30 @@ class AppRedux extends Component {
     this.updateSystem = this.updateSystem.bind(this);     
   }
 
-  componentDidUpdate = (nextProps) => { 
-    this.updateWeight();
-    this.updateHeight();
-    //race condition with redux where nextProps is not updated when this function runs - try thunk
-    /* if (nextProps.feet && nextProps.inches || nextProps.cm) {
-      console.log("component did update && passed");
-      this.updateHeight(); 
+  componentDidUpdate = (prevProps) => { 
+    if (prevProps.feet !== this.props.feet || prevProps.inches !== this.props.inches || prevProps.cm !== this.props.cm) {
+      console.log("component did update && passed && updated height!!");
+      this.updateHeight();
     }
-    if (nextProps.lbs || nextProps.kg) {
-      console.log("component did update && passed");
+    if (prevProps.lbs !== this.props.lbs || prevProps.kg !== this.props.kg) {
+      console.log("component did update && passed && update weight");
       this.updateWeight();
-    } */
+    }
   }
 
   updateSystem(e) {
     this.props.updateSystem(e.target.value);
+    this.clearForm();
+  }
+
+  clearForm = () => {
+    console.log("clear form");
     this.props.updateFeet(null);
     this.props.updateInches(null);
     this.props.updateLbs(null);
     this.props.updateKilograms(null);
     this.props.updateCentimeters(null);
   }
-
 
   updateFeet = (e) => {
     this.props.updateFeet(e.target.value);
@@ -157,7 +158,7 @@ class AppRedux extends Component {
                   </div>
                 </Fragment>
               }
-              <Result height={height} weight={weight} />
+              <Result clearForm={this.clearForm} />
           </div>
         </div>
       </Fragment>
@@ -165,7 +166,7 @@ class AppRedux extends Component {
   }
 }
 const mapStateToProps = (state) => {
-    console.log(state);
+    //console.log(state);
     return {
         system: state.system,
         lbs: state.lbs,
