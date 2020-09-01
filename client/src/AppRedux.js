@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
-import { // action creators
+import {
   updateLbs, 
   updateSystem, 
   updateFeet, 
@@ -34,11 +34,9 @@ class AppRedux extends Component {
 
   componentDidUpdate = (prevProps) => { 
     if (prevProps.feet !== this.props.feet || prevProps.inches !== this.props.inches || prevProps.cm !== this.props.cm) {
-      console.log("component did update && passed && updated height!!");
       this.updateHeight();
     }
     if (prevProps.lbs !== this.props.lbs || prevProps.kg !== this.props.kg) {
-      console.log("component did update && passed && update weight");
       this.updateWeight();
     }
   }
@@ -113,7 +111,7 @@ class AppRedux extends Component {
   }
 
   render() {
-    const {height, weight} = this.props;
+    const {feet, inches, cm, lbs, kg} = this.props;
     return (
       <Fragment>
         <div className="app"> 
@@ -131,15 +129,15 @@ class AppRedux extends Component {
                 <Fragment>
                   <div className="row">
                     <div className="col">
-                      <input className="form-control" placeholder="Feet" onChange={this.updateFeet} />
+                  <input type="number" maxLength="1" className="form-control" placeholder="Feet" onChange={this.updateFeet} value={feet || ""} />
                     </div>
                     <div className="col">
-                      <input className="form-control" placeholder="Inches" onChange={this.updateInches} />
+                  <input type="number" maxLength="2" className="form-control" placeholder="Inches" onChange={this.updateInches} value={inches || ""} />
                     </div>
                   </div>
                   <div className="row">
                     <div className="col">
-                      <input className="form-control" placeholder="Pounds" onChange={this.updateLbs} />
+                  <input type="number" maxLength="3" className="form-control" placeholder="Pounds" onChange={this.updateLbs} value={lbs || ""} />
                     </div>
                   </div>
                 </Fragment>
@@ -148,12 +146,12 @@ class AppRedux extends Component {
                 <Fragment>
                   <div className="row">
                     <div className="col">
-                      <input className="form-control" placeholder="Centimeters" onChange={this.updateCM} />
+                  <input type="number" maxLength="3"  className="form-control" placeholder="Centimeters" onChange={this.updateCM} value={cm || ""} />
                     </div>
                   </div>
                   <div className="row">
                     <div className="col">
-                      <input className="form-control" placeholder="Kilograms" onChange={this.updateKG} />
+                  <input type="number" maxLength="3"  className="form-control" placeholder="Kilograms" onChange={this.updateKG} value={kg || ""} />
                     </div>
                   </div>
                 </Fragment>
@@ -166,7 +164,6 @@ class AppRedux extends Component {
   }
 }
 const mapStateToProps = (state) => {
-    //console.log(state);
     return {
         system: state.system,
         lbs: state.lbs,

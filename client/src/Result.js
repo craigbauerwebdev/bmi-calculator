@@ -13,8 +13,6 @@ class Result extends Component {
     }
 
     componentDidUpdate = (prevProps) => { 
-        console.log("UPDATED!!!!");
-        //check for the system change
         if(prevProps.system !== this.props.system) {
             this.setState({
                 bmi: null,
@@ -74,7 +72,8 @@ class Result extends Component {
         }
     }
 
-    resetForm = () => {
+    resetForm = (e) => {
+        e.preventDefault();
         this.props.clearForm();
         this.setState({
             bmi: null,
@@ -88,7 +87,7 @@ class Result extends Component {
         <Fragment>
             <div className="result"> 
                 <button className="btn btn-primary" onClick={this.calculateBMI}>Calculate</button>
-                {(this.state.bmi && this.state.bmi !== NaN) &&
+                {(this.state.bmi && !isNaN(this.state.bmi)) &&
                     <h1>{Math.round(this.state.bmi * 10) / 10}</h1>
                 }
                 {this.state.comment &&
@@ -105,7 +104,7 @@ class Result extends Component {
 }
 
 const mapStateToProps = (state) => {
-    console.log(state);
+    //console.log(state);
     return {
         system: state.system,
         weight: state.weight,
@@ -114,4 +113,3 @@ const mapStateToProps = (state) => {
 }
 
 export default connect( mapStateToProps, {} )(Result);
-//export default Result;
